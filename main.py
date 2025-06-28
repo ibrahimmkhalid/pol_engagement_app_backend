@@ -5,6 +5,7 @@ import requests
 import dotenv
 import openai
 import os
+import json
 
 dotenv.load_dotenv()
 
@@ -55,6 +56,45 @@ def search():
                     "title": datum["title"],
                 }
             )
+    return ret_data
+
+
+@app.route("/summary", methods=["GET"])
+def summary():
+    params = request.args
+    bill_id = params["bill_id"]
+    bill_id = 1922275
+    url = f"{LEGISCAN_API_URL}&op=getBill&id={bill_id}"
+    response = requests.get(url)
+    data = response.json()["bill"]
+    ret_data = {
+        "title": data["title"],
+    }
+    th_api = "https://agents.toolhouse.ai/c536f491-09b0-4159-a106-23b1690caece"
+    response_sum = requests.post(
+        th_api,
+        json={
+            "vars": {"bill_content": json.dumps(data)},
+            "message": "tell me a summary of the bill",
+        },
+    )
+    response_for = requests.post(
+        th_api,
+        json={
+            "vars": {"bill_content": json.dumps(data)},
+            "message": "tell me 3 brief bullet points for this bill",
+        },
+    )
+    response_aga = requests.post(
+        th_api,
+        json={
+            "vars": {"bill_content": json.dumps(data)},
+            "message": "tell me 3 brief bullet points against this bill",
+        },
+    )
+    ret_data["summary"] = response_sum.text
+    ret_data["for"] = response_for.text
+    ret_data["against"] = response_aga.text
     return ret_data
 
 
