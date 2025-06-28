@@ -1,5 +1,6 @@
 from typing import Dict
 from flask import Flask, request
+from flask_cors import CORS
 import requests
 import dotenv
 import openai
@@ -8,6 +9,8 @@ import os
 dotenv.load_dotenv()
 
 app = Flask(__name__)
+CORS(app, origins=["https://political-engagement-app.vercel.app"])
+
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 CONGRESS_API_KEY = os.getenv("CONGRESS_API_KEY")
 if OPENAI_API_KEY is None:
