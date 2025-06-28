@@ -22,7 +22,7 @@ if LEGISCAN_API_KEY is None:
     raise Exception("LEGISCAN_API_KEY is not set")
 
 CONGRESS_API_URL = "https://api.congress.gov/v3/"
-LEGISCAN_API_URL = f"https://api.legiscan.com/?key={LEGISCAN_API_KEY}&op=getSearch"  # &state=STATE&query=QUERY"
+LEGISCAN_API_URL = f"https://api.legiscan.com/?key={LEGISCAN_API_KEY}"
 
 
 PORT = int(os.getenv("APP_PORT", 8080))
@@ -39,7 +39,7 @@ def search():
     params = request.args
     state = params["state"]
     query = params["query"]
-    url = f"{LEGISCAN_API_URL}&state={state}&query={query}"
+    url = f"{LEGISCAN_API_URL}&op=getSearch&state={state}&query={query}"
     response = requests.get(url)
     data = response.json()["searchresult"]
     # create a new list of objects that only has "bill_id", "bill_number", "title"
@@ -47,13 +47,14 @@ def search():
     count = int(data["summary"]["range"].split()[-1])
     for i in range(1, count):
         datum = data[str(i)]
-        ret_data.append(
-            {
-                "bill_id": datum["bill_id"],
-                "bill_number": datum["bill_number"],
-                "title": datum["title"],
-            }
-        )
+        if state == "ALL" or datum["state"] == state:
+            ret_data.append(
+                {
+                    "bill_id": datum["bill_id"],
+                    "bill_number": datum["bill_number"],
+                    "title": datum["title"],
+                }
+            )
     return ret_data
 
 
