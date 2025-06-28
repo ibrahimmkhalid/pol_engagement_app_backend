@@ -82,7 +82,7 @@ def summary():
         th_api,
         json={
             "vars": {"bill_content": json.dumps(data)},
-            "message": "tell me 3 brief bullet points for this bill",
+            "message": "tell me 3 brief bullet points in support of  this bill",
         },
     )
     response_aga = requests.post(
