@@ -10,6 +10,8 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if OPENAI_API_KEY is None:
     raise Exception("OPENAI_API_KEY is not set")
 
+PORT = int(os.getenv("APP_PORT", 8080))
+
 
 @app.route("/")
 def hello_world():
@@ -17,4 +19,4 @@ def hello_world():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=PORT)
